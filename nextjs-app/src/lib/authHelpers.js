@@ -49,7 +49,7 @@ const initUser = async (user) => {
 
 export const addUserData = async (user, data) => {
   try {
-    await setDoc(doc(db, "users", user.uid), data);
+    await setDoc(doc(db, "users", user.uid), data, { merge: true });
   } catch (error) {
     console.error("Error adding user data:", error.message);
     throw error;

@@ -30,7 +30,6 @@ function Signup() {
     try {
       await signUp(email, password); // Call the sign-in function
       alert("User successfully signed up!");
-
       router.push("/companyqs"); // Redirect to the companyqs page
     } catch (err) {
       alert("Error" + err.message); // Display error if sign-in fails

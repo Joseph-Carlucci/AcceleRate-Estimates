@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "@/lib/firebase";
+import { addUserData } from "@/lib/authHelpers";
 
 function CompanyQs() {
   const [companyData, setCompanyData] = useState("");
@@ -26,6 +27,7 @@ function CompanyQs() {
   const handleSubmit = (e) => {
     e.preventDefault();
     alert(`Company Data: ${companyData}`);
+    addUserData(user, { rate: companyData });
   };
 
   if (!user) {
