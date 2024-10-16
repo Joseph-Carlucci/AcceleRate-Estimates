@@ -1,6 +1,7 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import Signup from "./signup/page";
+import CompanyQs from "./companyqs/page";
 
 const FramerEmbed = () => {
   return (
@@ -11,7 +12,7 @@ const FramerEmbed = () => {
     //     title="Landing Page"
     //   />
     // </div>
-    <Signup />
+    <CompanyQs />
   );
 };
 
