@@ -2,8 +2,8 @@ import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
 } from "firebase/auth";
-import { auth } from "./firebase.js"; // Import your Firebase config
-import { setDoc } from "firebase/firestore";
+import { auth, db } from "./firebase.js"; // Import your Firebase config
+import { setDoc, doc } from "firebase/firestore";
 
 // Sign Up function
 export const signUp = async (email, password) => {
