@@ -1,7 +1,25 @@
-import { useState } from "react";
+"use client";
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { onAuthStateChanged } from "firebase/auth";
+import { auth } from "@/lib/firebase";
 
 function CompanyQs() {
   const [companyData, setCompanyData] = useState("");
+  const [user, setUser] = useState(null);
+  const router = useRouter();
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        setUser(user); // User is signed in
+      } else {
+        router.push("/signup"); // Redirect to signup if not authenticated
+      }
+    });
+
+    return () => unsubscribe();
+  }, [router]);
 
   const handleDataChange = (e) => setCompanyData(e.target.value);
 
@@ -9,6 +27,10 @@ function CompanyQs() {
     e.preventDefault();
     alert(`Company Data: ${companyData}`);
   };
+
+  if (!user) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <form onSubmit={handleSubmit}>

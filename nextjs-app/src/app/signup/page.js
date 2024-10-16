@@ -1,11 +1,13 @@
 "use client";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { signUp } from "@/lib/authHelpers";
 
 function Signup() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const router = useRouter();
 
   const handleEmailChange = (e) => setEmail(e.target.value);
   const handlePasswordChange = (e) => setPassword(e.target.value);
@@ -28,6 +30,8 @@ function Signup() {
     try {
       await signUp(email, password); // Call the sign-in function
       alert("User successfully signed up!");
+
+      router.push("/companyqs"); // Redirect to the companyqs page
     } catch (err) {
       alert("Error" + err.message); // Display error if sign-in fails
     }
