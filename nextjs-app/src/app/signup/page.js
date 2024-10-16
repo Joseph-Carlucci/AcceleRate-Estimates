@@ -12,13 +12,19 @@ function Signup() {
   const validatePassword = () => {
     if (password !== confirmPassword) {
       alert("Passwords do not match");
+      return false;
     }
+    return true;
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log("Email:", email);
-    console.log("Password:", password);
+
+    if (!validatePassword()) {
+      return;
+    }
+
+    alert(`Email: ${email}\nPassword: ${password}`);
   };
 
   return (
