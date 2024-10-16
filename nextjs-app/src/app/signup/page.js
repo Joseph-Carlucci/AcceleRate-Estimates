@@ -1,4 +1,6 @@
+"use client";
 import { useState } from "react";
+import { signUp } from "@/lib/authHelpers";
 
 function Signup() {
   const [email, setEmail] = useState("");
@@ -17,14 +19,18 @@ function Signup() {
     return true;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (!validatePassword()) {
       return;
     }
-
-    alert(`Email: ${email}\nPassword: ${password}`);
+    try {
+      await signUp(email, password); // Call the sign-in function
+      alert("User successfully signed up!");
+    } catch (err) {
+      alert("Error" + err.message); // Display error if sign-in fails
+    }
   };
 
   return (
