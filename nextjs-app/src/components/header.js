@@ -1,7 +1,7 @@
 import React from "react";
-import styled from "styled-components";
+import styled from "@emotion/styled";
 import Tab from "./tab.js";
- 
+
 const HeaderContainer = styled.header`
   background-color: #1a1a1a; /* Match with main dark background */
   color: #dcdcdc; /* Softer grey for text */
@@ -75,7 +75,11 @@ export default function Header({ onContentChange, activeTab }) {
     <HeaderContainer>
       <Title>AcceleRate</Title>
       <Nav>
-        <Tab name="Menu" isActive={getActive("Menu")} onClick={handleTabClick} />
+        <Tab
+          name="Menu"
+          isActive={getActive("Menu")}
+          onClick={handleTabClick}
+        />
         <Tab
           name="Pricing Configuration"
           isActive={getActive("Pricing Configuration")}

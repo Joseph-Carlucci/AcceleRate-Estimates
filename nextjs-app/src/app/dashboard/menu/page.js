@@ -1,5 +1,5 @@
 import React from "react";
-import styled from "styled-components";
+import styled from "@emotion/styled";
 import { FiActivity, FiUser, FiFileText, FiBarChart2 } from "react-icons/fi";
 
 const DashboardContainer = styled.div`

@@ -1,6 +1,6 @@
 "use client";
 import React, { useState } from "react";
-import styled from "styled-components";
+import styled from "@emotion/styled";
 import Header from "@/components/header.js";
 import QuotesPage from "@/app/dashboard/quotes/page.js";
 import ProfilePage from "@/app/dashboard/profile/page.js";
