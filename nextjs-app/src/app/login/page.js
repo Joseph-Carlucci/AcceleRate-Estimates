@@ -80,13 +80,6 @@ function Signin() {
           Login
         </Typography>
 
-        <Box
-          component="img"
-          src="/res/logo.png"
-          alt="Company Logo"
-          sx={{ width: 120, height: "auto", mb: 2 }} // Adjust width as needed
-        />
-
         {/* Show error alert if login fails */}
         {error && <Alert severity="error">{error}</Alert>}
 

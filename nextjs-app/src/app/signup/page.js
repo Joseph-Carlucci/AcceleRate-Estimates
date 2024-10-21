@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation"; // For navigation in Next.js
+import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as Yup from "yup";
@@ -45,12 +45,13 @@ function Signup() {
     setError("");
     if (data.password !== data.confirmedPassword) {
       setError("Passwords do not match");
+      setLoading(false);
       return;
     }
     try {
       await signUp(data.email, data.password);
       alert("User successfully signed in!");
-      router.push("/companyqs"); // Redirect after successful sign-up
+      router.push("/companyqs");
     } catch (err) {
       setError(err.message || "Sign up failed, please try again.");
     } finally {
@@ -64,29 +65,41 @@ function Signup() {
       sx={{
         backgroundColor: "white",
         minHeight: "100vh",
-        minWidth: "100vw",
         paddingTop: 8,
-        position: "absolute",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
       }}
     >
       <Box
         sx={{
-          position: "relative",
+          width: "100%",
           backgroundColor: "white",
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          mt: 8, // Offset from the top of the viewport
+          borderRadius: 2,
+          boxShadow: 3,
+          padding: 4,
         }}
       >
-        <Typography variant="h4" gutterBottom sx={{ color: "green" }}>
+        <Typography
+          variant="h4"
+          gutterBottom
+          sx={{ color: "green", textAlign: "center" }}
+        >
           Sign Up
         </Typography>
 
-        {/* Show error alert if login fails */}
         {error && <Alert severity="error">{error}</Alert>}
 
-        <Box component="form" onSubmit={handleSubmit(onSubmit)} sx={{ mt: 2 }}>
+        <Box
+          component="form"
+          onSubmit={handleSubmit(onSubmit)}
+          sx={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            mt: 2,
+          }}
+        >
           <TextField
             label="Email"
             fullWidth
@@ -104,7 +117,7 @@ function Signup() {
             {...register("password")}
             error={!!errors.password}
             helperText={errors.password?.message}
-            sx={{ color: "green" }} // Set text color to green
+            sx={{ color: "green" }}
           />
 
           <TextField
@@ -115,10 +128,9 @@ function Signup() {
             {...register("confirmedPassword")}
             error={!!errors.password}
             helperText={errors.password?.message}
-            sx={{ color: "green" }} // Set text color to green
+            sx={{ color: "green" }}
           />
 
-          {/* Submit button with loading indicator */}
           <Button
             type="submit"
             fullWidth
