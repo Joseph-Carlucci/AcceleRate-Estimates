@@ -2,10 +2,15 @@
 import React, { useState, useEffect, useRef, useCallback, useId } from "react";
 import styled from "@emotion/styled";
 
+const Container = styled.div`
+  padding: 1rem;
+`;
+
 const AccountDropdownContainer = styled.div`
-  position: absolute;
+  position: relative;
   display: inline-block;
-  padding: 0.5rem 1rem;
+  padding: 0;
+  z-index: 1000; /* Ensures it appears in front of other elements */
 `;
 
 const AccountButton = styled.button`
@@ -50,15 +55,15 @@ const AccountButton = styled.button`
 `;
 
 const DropdownMenu = styled.div`
+  margin-top: 0.5rem; /* Adds space between dropdown button and account button */
+  width: 100%;
   position: absolute;
   top: 100%;
-  right: 0;
+  left: 0;
   background-color: #1e1e1e;
   border-radius: 8px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
   overflow: hidden;
-  margin-top: 0.5rem;
-  width: 200px;
   opacity: 0;
   transform: translateY(-10px);
   transition: opacity 0.3s, transform 0.3s;
@@ -76,13 +81,14 @@ const DropdownMenu = styled.div`
 `;
 
 const DropdownItem = styled.a`
+  width: 100%;
   display: block;
-  padding: 0.75rem 1rem;
+  padding: 0.5rem 1rem;
   color: #eaeaea;
   text-decoration: none;
   background-color: #1e1e1e;
   transition: background-color 0.3s;
-
+  text-align: center; /* Center the text */
   &:hover {
     background-color: #3c3c3c;
   }
@@ -103,46 +109,54 @@ const AccountDropdown = () => {
     }
   }, []);
 
+  const handleKeyDown = useCallback((event) => {
+    if (event.key === "Escape") {
+      setIsOpen(false);
+    }
+  }, []);
+
   useEffect(() => {
     document.addEventListener("mousedown", handleClickOutside);
+    document.addEventListener("keydown", handleKeyDown);
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("keydown", handleKeyDown);
     };
-  }, [handleClickOutside]);
+  }, [handleClickOutside, handleKeyDown]);
 
   return (
-    <AccountDropdownContainer ref={dropdownRef}>
-      <AccountButton
-        id={buttonId}
-        onClick={toggleDropdown}
-        className={isOpen ? "active" : ""}
-        aria-expanded={isOpen}
-        aria-controls={`${buttonId}-menu`}
-      >
-        <img src="/path/to/avatar.jpg" alt="User Avatar" className="avatar" />
-        <span className="username">Username</span>
-        <svg
-          className={`icon ${isOpen ? "rotate" : ""}`}
-          xmlns="http://www.w3.org/2000/svg"
-          viewBox="0 0 24 24"
+    <Container>
+      <AccountDropdownContainer ref={dropdownRef}>
+        <AccountButton
+          id={buttonId}
+          onClick={toggleDropdown}
+          className={isOpen ? "active" : ""}
+          aria-expanded={isOpen}
+          aria-controls={`${buttonId}-menu`}
+          tabIndex="0"
         >
-          <path d="M7 10l5 5 5-5H7z" />
-        </svg>
-      </AccountButton>
-      <DropdownMenu
-        id={`${buttonId}-menu`}
-        role="menu"
-        aria-labelledby={buttonId}
-        className={isOpen ? "open" : ""}
-      >
-        <DropdownItem href="/profile" role="menuitem">
-          Profile
-        </DropdownItem>
-        <DropdownItem href="/logout" role="menuitem">
-          Logout
-        </DropdownItem>
-      </DropdownMenu>
-    </AccountDropdownContainer>
+          <img src="/path/to/avatar.jpg" alt="User Avatar" className="avatar" />
+          <span className="username">Username</span>
+          <svg
+            className={`icon ${isOpen ? "rotate" : ""}`}
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+          >
+            <path d="M7 10l5 5 5-5H7z" />
+          </svg>
+        </AccountButton>
+        <DropdownMenu
+          id={`${buttonId}-menu`}
+          role="menu"
+          aria-labelledby={buttonId}
+          className={isOpen ? "open" : ""}
+        >
+          <DropdownItem href="/logout" role="menuitem">
+            Logout
+          </DropdownItem>
+        </DropdownMenu>
+      </AccountDropdownContainer>
+    </Container>
   );
 };
 
