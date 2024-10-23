@@ -7,7 +7,8 @@ const DashboardContainer = styled.div`
   display: flex;
   flex-direction: column;
   padding: 20px;
-  color: #e0e0e0;
+  color: "#e0e0e0";
+  background-color: #1c1c1c;
   min-height: 100vh;
   overflow-y: auto; /* Enables vertical scrolling */
 `;
@@ -51,7 +52,7 @@ const DashboardContent = styled.div`
 `;
 
 const Card = styled.div`
-  background-color: #f0f0f0;
+  background-color: #2b2b2b;
   padding: 20px;
   border-radius: 10px;
   flex: 1;
@@ -63,7 +64,7 @@ const Card = styled.div`
   transition: background-color 0.3s;
 
   &:hover {
-    background-color: #333;
+    background-color: #4a4a4a;
   }
 
   svg {
@@ -84,7 +85,7 @@ const CardValue = styled.p`
 `;
 
 const ActivityFeed = styled.div`
-  background-color: #f0f0f0;
+  background-color: #2b2b2b;
   color: #ffffff;
   padding: 20px;
   border-radius: 10px;
@@ -155,10 +156,10 @@ export default function MenuPage() {
         </ActivityFeed>
 
         {/* Placeholder for Chart Area */}
-        <ChartArea>
+        {/* <ChartArea>
           <h3>Sales Overview</h3>
           <p>Graph goes here...</p>
-        </ChartArea>
+        </ChartArea> */}
 
         <Card>
           <FiUser />

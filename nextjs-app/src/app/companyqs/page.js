@@ -23,6 +23,8 @@ const formStyle = {
   boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
   display: "flex",
   flexDirection: "column",
+  maxHeight: "90vh",
+  overflowY: "auto",
 };
 
 const inputStyle = {
@@ -79,8 +81,37 @@ const fillLaterButtonStyle = {
   cursor: "pointer",
 };
 
+const addButtonStyle = {
+  backgroundColor: "#4B5563",
+  color: "white",
+  padding: "10px 20px",
+  border: "none",
+  borderRadius: "4px",
+  cursor: "pointer",
+  marginTop: "10px",
+  alignSelf: "center",
+};
+
+const serviceOptions = [
+  "Lawn Mowing",
+  "Lawn Seeding and Sod Installation",
+  "Fertilization and Weed Control",
+  "Mulching",
+  "Irrigation System Installation",
+  "Lawn Aeration",
+  "Hydroseeding",
+  "Gravel or Stone Ground Covering",
+  "Artificial Turf Installation",
+  "Leaf Removal",
+  "Snow Removal",
+  "Soil Grading and Leveling",
+  "Pesticide and Herbicide Spraying",
+];
+
 function CompanyQs() {
   const [user, setUser] = useState(null);
+  const [serviceCount, setServiceCount] = useState(3);
+  const [selectedServices, setSelectedServices] = useState([]);
   const router = useRouter();
 
   const {
@@ -104,13 +135,29 @@ function CompanyQs() {
 
   // Function to handle form submission
   const onSubmit = (data) => {
-    alert(`Form Data: ${JSON.stringify(data)}`);
-    // Sending data to Firebase
     addUserData(user, data); // Adding all form data to Firebase
+    router.push("/dashboard"); // Redirect to dashboard
   };
 
   const handleFillLater = () => {
     router.push("/dashboard"); // Redirect to dashboard or any page of your choice
+  };
+
+  const handleAddService = () => {
+    setServiceCount(serviceCount + 1);
+  };
+
+  const handleServiceChange = (index, value) => {
+    const updatedServices = [...selectedServices];
+    updatedServices[index] = value;
+    setSelectedServices(updatedServices);
+  };
+
+  const availableOptions = (index) => {
+    return serviceOptions.filter(
+      (option) =>
+        !selectedServices.includes(option) || selectedServices[index] === option
+    );
   };
 
   if (!user) {
@@ -120,103 +167,55 @@ function CompanyQs() {
   return (
     <div style={containerStyle}>
       <form style={formStyle} onSubmit={handleSubmit(onSubmit)}>
-        <h2 style={headingStyle}>
-          Answer the following to help us automate your quotes
-        </h2>
+        <h2 style={headingStyle}>Tell us about the services you offer</h2>
 
         <p style={infoMessageStyle}>
           You can update this information later in your profile settings.
         </p>
 
-        <div>
-          <label style={labelStyle} htmlFor="rate">
-            How much do you charge per square foot?
-          </label>
-          <input
-            style={inputStyle}
-            type="number"
-            id="rate"
-            {...register("rate", { required: true })}
-          />
-          {errors.rate && (
-            <p style={{ color: "red" }}>This field is required</p>
-          )}
-        </div>
+        {[...Array(serviceCount)].map((_, index) => (
+          <div key={index} style={{ marginTop: index >= 3 ? "20px" : "0" }}>
+            <label style={labelStyle} htmlFor={`service${index + 1}`}>
+              What is the name of service #{index + 1} that you offer?
+            </label>
+            <select
+              style={inputStyle}
+              id={`service${index + 1}`}
+              {...register(`service${index + 1}`, { required: index === 0 })}
+              value={selectedServices[index] || ""}
+              onChange={(e) => handleServiceChange(index, e.target.value)}
+            >
+              <option value="" disabled>
+                Select a service
+              </option>
+              {availableOptions(index).map((option) => (
+                <option key={option} value={option}>
+                  {option}
+                </option>
+              ))}
+            </select>
+            {errors[`service${index + 1}`] && index === 0 && (
+              <p style={{ color: "red" }}>This field is required</p>
+            )}
 
-        <div>
-          <label style={labelStyle} htmlFor="size">
-            Blah blah blah blah?
-          </label>
-          <input
-            style={inputStyle}
-            type="number"
-            id="size"
-            {...register("size", { required: true })}
-          />
-          {errors.size && (
-            <p style={{ color: "red" }}>This field is required</p>
-          )}
-        </div>
+            <label style={labelStyle} htmlFor={`rate${index + 1}`}>
+              How much do you charge per square foot for service #{index + 1}?
+            </label>
+            <input
+              style={inputStyle}
+              type="number"
+              id={`rate${index + 1}`}
+              {...register(`rate${index + 1}`, { required: index === 0 })}
+            />
+            {errors[`rate${index + 1}`] && index === 0 && (
+              <p style={{ color: "red" }}>This field is required</p>
+            )}
+          </div>
+        ))}
 
-        <div>
-          <label style={labelStyle} htmlFor="experience">
-            Blah blah blah blah?
-          </label>
-          <input
-            style={inputStyle}
-            type="number"
-            id="experience"
-            {...register("experience", { required: true })}
-          />
-          {errors.experience && (
-            <p style={{ color: "red" }}>This field is required</p>
-          )}
-        </div>
-
-        <div>
-          <label style={labelStyle} htmlFor="services">
-            Blah blah blah blah?
-          </label>
-          <input
-            style={inputStyle}
-            type="text"
-            id="services"
-            {...register("services", { required: true })}
-          />
-          {errors.services && (
-            <p style={{ color: "red" }}>This field is required</p>
-          )}
-        </div>
-
-        <div>
-          <label style={labelStyle} htmlFor="location">
-            Blah blah blah blah?
-          </label>
-          <input
-            style={inputStyle}
-            type="text"
-            id="location"
-            {...register("location", { required: true })}
-          />
-          {errors.location && (
-            <p style={{ color: "red" }}>This field is required</p>
-          )}
-        </div>
-
-        <div>
-          <label style={labelStyle} htmlFor="phone">
-            Blah blah blah blah?
-          </label>
-          <input
-            style={inputStyle}
-            type="tel"
-            id="phone"
-            {...register("phone", { required: true })}
-          />
-          {errors.phone && (
-            <p style={{ color: "red" }}>This field is required</p>
-          )}
-        </div>
+        <button type="button" style={addButtonStyle} onClick={handleAddService}>
+          Add More Service
+        </button>
 
         {/* Container for Submit and "Fill Out Later" buttons */}
         <div style={buttonContainerStyle}>

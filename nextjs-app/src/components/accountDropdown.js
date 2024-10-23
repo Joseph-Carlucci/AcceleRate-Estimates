@@ -64,6 +64,7 @@ const DropdownMenu = styled.div`
   transition: opacity 0.3s, transform 0.3s;
   z-index: 1000; /* Ensures it appears in front of other elements */
   pointer-events: none; /* Prevents interaction when hidden */
+
   visibility: hidden; /* Hides from screen readers when not visible */
 
   &.open {
