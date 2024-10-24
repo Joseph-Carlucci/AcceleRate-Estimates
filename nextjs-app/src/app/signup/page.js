@@ -18,6 +18,7 @@ import {
 
 // Validation schema using Yup
 const validationSchema = Yup.object().shape({
+  companyName: Yup.string().required("Company Name is required"),
   email: Yup.string()
     .email("Please enter a valid email")
     .required("Email is required"),
