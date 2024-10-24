@@ -55,3 +55,18 @@ export const addUserData = async (user, data) => {
     throw error;
   }
 };
+
+export const getUserData = async (user, key) => {
+  try {
+    const docRef = doc(db, "users", user.uid);
+    const docSnap = await docRef.get();
+    if (docSnap.exists()) {
+      return docSnap.data()[key];
+    } else {
+      console.log("No such document!");
+    }
+  } catch (error) {
+    console.error("Error getting user data:", error.message);
+    throw error;
+  }
+};
