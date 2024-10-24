@@ -2,10 +2,10 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { useForm } from "react-hook-form";
+import { get, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as Yup from "yup";
-import { signUp } from "@/lib/authHelpers";
+import { signUp, addUserData } from "@/lib/authHelpers";
 import {
   Button,
   TextField,
@@ -15,16 +15,18 @@ import {
   CircularProgress,
   Alert,
 } from "@mui/material";
+import { getAuth } from "firebase/auth";
 
 // Validation schema using Yup
 const validationSchema = Yup.object().shape({
-  companyName: Yup.string().trim().required("Company Name is required"),
   email: Yup.string()
     .email("Please enter a valid email")
     .required("Email is required"),
   password: Yup.string()
     .min(6, "Password must be at least 6 characters")
     .required("Password is required"),
+  confirmedPassword: Yup.string().required("Confirm Password is required"),
+  name: Yup.string().trim().required("Name is required"),
 });
 
 function Signup() {
@@ -49,13 +51,11 @@ function Signup() {
       setLoading(false);
       return;
     }
-    if (!data.companyName) {
-      setError("Company Name is required");
-      setLoading(false);
-      return;
-    }
     try {
       await signUp(data.email, data.password);
+      await addUserData(getAuth().currentUser, {
+        name: data.name,
+      });
       router.push("/companyqs");
     } catch (err) {
       setError(err.message || "Sign up failed, please try again.");
@@ -106,21 +106,21 @@ function Signup() {
           }}
         >
           <TextField
-            label="Company Name"
-            fullWidth
-            margin="normal"
-            {...register("companyName")}
-            error={!!errors.companyName}
-            helperText={errors.companyName?.message}
-          />
-
-          <TextField
             label="Email"
             fullWidth
             margin="normal"
             {...register("email")}
             error={!!errors.email}
             helperText={errors.email?.message}
+          />
+
+          <TextField
+            label="Company Name"
+            fullWidth
+            margin="normal"
+            {...register("name")}
+            error={!!errors.name}
+            helperText={errors.name?.message}
           />
 
           <TextField
@@ -141,7 +141,7 @@ function Signup() {
             margin="normal"
             {...register("confirmedPassword")}
             error={!!errors.password}
-            helperText={errors.password?.message}
+            helperText={errors.confirmedPassword?.message}
             sx={{ color: "green" }}
           />
 
