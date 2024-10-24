@@ -2,6 +2,9 @@
 import React, { useState, useEffect, useRef, useCallback, useId } from "react";
 import styled from "@emotion/styled";
 import { getUserData, currentUser } from "@/lib/authHelpers";
+import { signOut } from "@/lib/authHelpers";
+import { useRouter } from "next/navigation";
+import { auth } from "@/lib/firebase";
 import { get } from "react-hook-form";
 import { autocompleteClasses } from "@mui/material";
 
@@ -102,6 +105,7 @@ const AccountDropdown = () => {
   const [username, setUsername] = useState("Loading...");
   const dropdownRef = useRef(null);
   const buttonId = useId(); // Accessible ID for button
+  const router = useRouter();
 
   const toggleDropdown = useCallback(() => {
     setIsOpen((prev) => !prev);
@@ -118,6 +122,15 @@ const AccountDropdown = () => {
       setIsOpen(false);
     }
   }, []);
+
+  const handleLogout = async () => {
+    try {
+      await signOut(auth);
+      router.push("/");
+    } catch (error) {
+      console.error("Failed to sign out:", error);
+    }
+  };
 
   useEffect(() => {
     const fetchUsername = async () => {
@@ -171,7 +184,7 @@ const AccountDropdown = () => {
           aria-labelledby={buttonId}
           className={isOpen ? "open" : ""}
         >
-          <DropdownItem href="/logout" role="menuitem">
+          <DropdownItem onClick={handleLogout} role="menuitem">
             Logout
           </DropdownItem>
         </DropdownMenu>

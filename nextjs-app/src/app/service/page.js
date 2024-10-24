@@ -1,3 +1,4 @@
+"use client";
 import React, { useState, useEffect, useRef } from "react";
 import "./service.css";
 
@@ -326,6 +327,7 @@ function Service() {
                     Select Address From Dropdown
                   </div>
                   <input
+                    style={{ color: "black" }}
                     id="search"
                     type="text"
                     placeholder="Enter your address"
@@ -417,6 +419,7 @@ function Service() {
                       placeholder="Phone Number"
                     />
                     <textarea
+                      style={{ height: "120px" }}
                       className="message-input"
                       id="message"
                       name="message"
