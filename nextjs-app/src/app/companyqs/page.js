@@ -11,7 +11,7 @@ const containerStyle = {
   justifyContent: "center",
   alignItems: "center",
   height: "100vh",
-  backgroundColor: "#f0fff4",
+  backgroundColor: "white",
 };
 
 const formStyle = {
@@ -199,7 +199,8 @@ function CompanyQs() {
             )}
 
             <label style={labelStyle} htmlFor={`rate${index + 1}`}>
-              How much do you charge per square foot for service #{index + 1}?
+              How much do you charge in $ per square foot for service #
+              {index + 1}?
             </label>
             <input
               style={inputStyle}
