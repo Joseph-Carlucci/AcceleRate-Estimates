@@ -101,6 +101,15 @@ function Signup() {
           }}
         >
           <TextField
+            label="Company Name"
+            fullWidth
+            margin="normal"
+            {...register("companyName")}
+            error={!!errors.email}
+            helperText={errors.email?.message}
+          />
+
+          <TextField
             label="Email"
             fullWidth
             margin="normal"

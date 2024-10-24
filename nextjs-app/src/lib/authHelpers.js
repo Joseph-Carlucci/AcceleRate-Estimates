@@ -6,14 +6,14 @@ import { auth, db } from "./firebase.js"; // Import your Firebase config
 import { setDoc, doc } from "firebase/firestore";
 
 // Sign Up function
-export const signUp = async (email, password) => {
+export const signUp = async (email, password, companyName) => {
   try {
     const userCredential = await createUserWithEmailAndPassword(
       auth,
       email,
       password
     );
-    initUser(userCredential.user); // Initialize user in Firestore
+    await initUser(userCredential.user, companyName); // Initialize user in Firestore
     return userCredential.user; // User details on successful sign-up
   } catch (error) {
     console.error("Error signing up:", error.message);
@@ -40,6 +40,7 @@ const initUser = async (user) => {
   try {
     await setDoc(doc(db, "users", user.uid), {
       email: user.email,
+      companyName: companyName,
     });
   } catch (error) {
     console.error("Error initializing user:", error.message);
