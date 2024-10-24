@@ -124,7 +124,7 @@ const AccountDropdown = () => {
       try {
         const user = await currentUser(); // Make sure this returns the user object
         if (user) {
-          const name = await getUserData(user, "name"); // Assuming 'email' is the key you're fetching
+          const name = await getUserData("name"); // Assuming 'email' is the key you're fetching
           setUsername(name || "Unknown User");
         } else {
           setUsername("Guest");
