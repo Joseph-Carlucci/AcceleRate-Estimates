@@ -326,6 +326,7 @@ export default function ServicePage({ serviceData }) {
                     Select Address From Dropdown
                   </div>
                   <input
+                    style={{ color: "black" }}
                     id="search"
                     type="text"
                     placeholder="Enter your address"
@@ -417,6 +418,7 @@ export default function ServicePage({ serviceData }) {
                       placeholder="Phone Number"
                     />
                     <textarea
+                      style={{ height: "120px" }}
                       className="message-input"
                       id="message"
                       name="message"

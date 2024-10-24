@@ -3,7 +3,7 @@ import {
   signInWithEmailAndPassword,
   getAuth,
   onAuthStateChanged,
-  signOut,
+  signOut as firebaseSignOut,
 } from "firebase/auth";
 import { auth, db } from "./firebase.js"; // Import your Firebase config
 import { setDoc, doc, getDoc, getDocs, collection } from "firebase/firestore";
@@ -44,6 +44,17 @@ export const signIn = async (email, password) => {
     return userCredential.user; // User details on successful sign-in
   } catch (error) {
     console.error("Error signing in:", error.message);
+    throw error;
+  }
+};
+
+// Sign Out function
+export const signOut = async () => {
+  try {
+    await firebaseSignOut(auth);
+    alert("Signed out successfully");
+  } catch (error) {
+    console.error("Error signing out:", error.message);
     throw error;
   }
 };
