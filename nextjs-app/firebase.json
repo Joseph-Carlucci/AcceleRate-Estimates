@@ -28,6 +28,10 @@
         "destination": "/forgot-password.html"
       },
       {
+        "source": "/customlink",
+        "destination": "/custom-link.html"
+      },
+      {
         "source": "**",
         "destination": "/index.html"
       }
