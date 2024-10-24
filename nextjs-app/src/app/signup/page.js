@@ -18,7 +18,7 @@ import {
 
 // Validation schema using Yup
 const validationSchema = Yup.object().shape({
-  companyName: Yup.string().required("Company Name is required"),
+  companyName: Yup.string().trim().required("Company Name is required"),
   email: Yup.string()
     .email("Please enter a valid email")
     .required("Email is required"),
@@ -46,6 +46,11 @@ function Signup() {
     setError("");
     if (data.password !== data.confirmedPassword) {
       setError("Passwords do not match");
+      setLoading(false);
+      return;
+    }
+    if (!data.companyName) {
+      setError("Company Name is required");
       setLoading(false);
       return;
     }
@@ -105,8 +110,8 @@ function Signup() {
             fullWidth
             margin="normal"
             {...register("companyName")}
-            error={!!errors.email}
-            helperText={errors.email?.message}
+            error={!!errors.companyName}
+            helperText={errors.companyName?.message}
           />
 
           <TextField
