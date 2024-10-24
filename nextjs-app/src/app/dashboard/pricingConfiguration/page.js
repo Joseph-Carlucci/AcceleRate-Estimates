@@ -1,6 +1,9 @@
 "use client";
-import React, { useState, useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import styled from "@emotion/styled";
+import { db, auth } from "@/lib/firebase";
+import { doc, getDoc } from "firebase/firestore";
+import { onAuthStateChanged } from "firebase/auth";
 
 const DashboardContainer = styled.div`
   position: relative;
@@ -63,6 +66,8 @@ const ContainerBox = styled.div`
   max-width: 800px;
   box-sizing: border-box;
   margin-bottom: 20px;
+  max-height: 500px;
+  overflow-y: auto;
 `;
 
 const RowWrapper = styled.div`
@@ -104,7 +109,7 @@ const EditableInput = styled.input`
   color: #333;
   padding: 10px;
   border-radius: 5px;
-  width: calc(100% - 70px);
+  width: 100%;
   text-align: center;
   border: 1px solid #ccc;
   cursor: ${({ readOnly }) => (readOnly ? "default" : "text")};
@@ -125,71 +130,117 @@ const EditButton = styled.button`
   }
 `;
 
-const EditableSelect = styled.select`
-  background-color: #d3d3d3;
-  color: #333;
+const AddServiceButton = styled.button`
   padding: 10px;
-  border-radius: 5px;
-  width: calc(100% - 70px);
-  text-align: center;
-  border: 1px solid #ccc;
+  border: none;
+  background-color: #008000;
+  color: white;
   cursor: pointer;
-  margin-right: 10px;
+  border-radius: 5px;
+  margin-top: 20px;
+  align-self: center;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+
+  &:hover {
+    background-color: #005c00;
+  }
 `;
 
 const PricingConfigurationPage = () => {
-  const [service1, setService1] = useState("Service 1");
-  const [service1Charge, setService1Charge] = useState(0.1);
-  const [service2, setService2] = useState("Service 2");
-  const [service2Charge, setService2Charge] = useState(0.15);
-  const [isEditingService1, setIsEditingService1] = useState(false);
-  const [isEditingService1Charge, setIsEditingService1Charge] = useState(false);
-  const [isEditingService2, setIsEditingService2] = useState(false);
-  const [isEditingService2Charge, setIsEditingService2Charge] = useState(false);
+  const [services, setServices] = useState([]);
+  const [userData, setUserData] = useState({});
+  const serviceRefs = useRef([]);
+  const chargeRefs = useRef([]);
 
-  const service1Ref = useRef(null);
-  const service1ChargeRef = useRef(null);
-  const service2Ref = useRef(null);
-  const service2ChargeRef = useRef(null);
+  useEffect(() => {
+    // Fetch user data from Firestore for the logged-in user
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        try {
+          const docRef = doc(db, "users", user.uid); // Use the logged-in user's unique ID as the document ID
+          const docSnap = await getDoc(docRef);
 
-  const serviceOptions = [
-    "Lawn Mowing",
-    "Lawn Seeding and Sod Installation",
-    "Fertilization and Weed Control",
-    "Mulching",
-    "Irrigation System Installation",
-    "Lawn Aeration",
-    "Hydroseeding",
-    "Gravel or Stone Ground Covering",
-    "Artificial Turf Installation",
-    "Leaf Removal",
-    "Snow Removal",
-    "Soil Grading and Leveling",
-    "Pesticide and Herbicide Spraying",
-  ];
+          if (docSnap.exists()) {
+            const data = docSnap.data();
+            setUserData(data);
 
-  const handleEditClick = (setEditing, ref) => {
-    setEditing(true);
-    setTimeout(() => ref.current && ref.current.focus(), 0);
+            // Update the services list based on fetched data
+            if (data.services) {
+              const fetchedServices = data.services.map((service) => ({
+                name: service.name,
+                charge: parseFloat(service.rate) || 0.0,
+                isEditingName: false,
+                isEditingCharge: false,
+              }));
+              setServices(fetchedServices);
+            }
+          } else {
+            console.log("No such document!");
+          }
+        } catch (error) {
+          console.error("Error fetching document:", error);
+        }
+      } else {
+        console.log("User is not logged in");
+      }
+    });
+
+    return () => unsubscribe();
+  }, []);
+
+  const handleEditClick = (index, key) => {
+    setServices((prevServices) =>
+      prevServices.map((service, i) =>
+        i === index ? { ...service, [key]: true } : service
+      )
+    );
+    setTimeout(() => {
+      if (key === "isEditingName") {
+        serviceRefs.current[index]?.focus();
+      } else {
+        chargeRefs.current[index]?.focus();
+      }
+    }, 0);
   };
 
-  const handleBlur = (setEditing) => {
-    setEditing(false);
+  const handleBlur = (index, key) => {
+    setServices((prevServices) =>
+      prevServices.map((service, i) =>
+        i === index ? { ...service, [key]: false } : service
+      )
+    );
   };
 
-  const handleServiceChange = (setService, setEditing, value) => {
-    setService(value);
-    setEditing(false);
+  const handleServiceChange = (index, value) => {
+    setServices((prevServices) =>
+      prevServices.map((service, i) =>
+        i === index ? { ...service, name: value } : service
+      )
+    );
+  };
+
+  const handleChargeChange = (index, value) => {
+    setServices((prevServices) =>
+      prevServices.map((service, i) =>
+        i === index ? { ...service, charge: parseFloat(value) || 0 } : service
+      )
+    );
   };
 
   const formatCurrency = (value) => `$${value.toFixed(2)}`;
 
-  const getFilteredOptions = (currentService) => {
-    const selectedServices = [service1, service2];
-    return serviceOptions.filter(
-      (option) =>
-        !selectedServices.includes(option) || option === currentService
-    );
+  const addService = () => {
+    setServices((prevServices) => [
+      ...prevServices,
+      {
+        name: "New Service",
+        charge: 0.0,
+        isEditingName: false,
+        isEditingCharge: false,
+      },
+    ]);
   };
 
   return (
@@ -202,144 +253,53 @@ const PricingConfigurationPage = () => {
       </DashboardHeader>
       <DashboardContent>
         <ContainerBox>
-          <RowWrapper>
-            <BoxWrapper>
-              <Label>Service 1</Label>
-              <InlineWrapper>
-                {isEditingService1 ? (
-                  <EditableSelect
-                    value={service1}
-                    onChange={(e) =>
-                      handleServiceChange(
-                        setService1,
-                        setIsEditingService1,
-                        e.target.value
-                      )
-                    }
-                    onBlur={() => handleBlur(setIsEditingService1)}
-                  >
-                    {getFilteredOptions(service1).map((option) => (
-                      <option key={option} value={option}>
-                        {option}
-                      </option>
-                    ))}
-                  </EditableSelect>
-                ) : (
+          {services.map((service, index) => (
+            <RowWrapper key={index}>
+              <BoxWrapper>
+                <Label>Service {index + 1}</Label>
+                <InlineWrapper>
                   <EditableInput
-                    ref={service1Ref}
+                    ref={(el) => (serviceRefs.current[index] = el)}
                     type="text"
-                    value={service1}
-                    readOnly
+                    value={service.name}
+                    onChange={(e) => handleServiceChange(index, e.target.value)}
+                    readOnly={!service.isEditingName}
+                    onBlur={() => handleBlur(index, "isEditingName")}
                   />
-                )}
-                <EditButton
-                  onClick={() =>
-                    handleEditClick(setIsEditingService1, service1Ref)
-                  }
-                >
-                  Edit
-                </EditButton>
-              </InlineWrapper>
-            </BoxWrapper>
-            <BoxWrapper>
-              <Label>Cost per square foot for Service 1</Label>
-              <InlineWrapper>
-                <EditableInput
-                  ref={service1ChargeRef}
-                  type="text"
-                  value={
-                    isEditingService1Charge
-                      ? service1Charge
-                      : formatCurrency(service1Charge)
-                  }
-                  onChange={(e) =>
-                    setService1Charge(parseFloat(e.target.value) || 0)
-                  }
-                  readOnly={!isEditingService1Charge}
-                  onBlur={() => handleBlur(setIsEditingService1Charge)}
-                />
-                <EditButton
-                  onClick={() =>
-                    handleEditClick(
-                      setIsEditingService1Charge,
-                      service1ChargeRef
-                    )
-                  }
-                >
-                  Edit
-                </EditButton>
-              </InlineWrapper>
-            </BoxWrapper>
-          </RowWrapper>
-          <RowWrapper>
-            <BoxWrapper>
-              <Label>Service 2</Label>
-              <InlineWrapper>
-                {isEditingService2 ? (
-                  <EditableSelect
-                    value={service2}
-                    onChange={(e) =>
-                      handleServiceChange(
-                        setService2,
-                        setIsEditingService2,
-                        e.target.value
-                      )
-                    }
-                    onBlur={() => handleBlur(setIsEditingService2)}
+                  <EditButton
+                    onClick={() => handleEditClick(index, "isEditingName")}
                   >
-                    {getFilteredOptions(service2).map((option) => (
-                      <option key={option} value={option}>
-                        {option}
-                      </option>
-                    ))}
-                  </EditableSelect>
-                ) : (
+                    Edit
+                  </EditButton>
+                </InlineWrapper>
+              </BoxWrapper>
+              <BoxWrapper>
+                <Label>Cost per square foot for Service {index + 1}</Label>
+                <InlineWrapper>
                   <EditableInput
-                    ref={service2Ref}
+                    ref={(el) => (chargeRefs.current[index] = el)}
                     type="text"
-                    value={service2}
-                    readOnly
+                    value={
+                      service.isEditingCharge
+                        ? service.charge
+                        : formatCurrency(service.charge)
+                    }
+                    onChange={(e) => handleChargeChange(index, e.target.value)}
+                    readOnly={!service.isEditingCharge}
+                    onBlur={() => handleBlur(index, "isEditingCharge")}
                   />
-                )}
-                <EditButton
-                  onClick={() =>
-                    handleEditClick(setIsEditingService2, service2Ref)
-                  }
-                >
-                  Edit
-                </EditButton>
-              </InlineWrapper>
-            </BoxWrapper>
-            <BoxWrapper>
-              <Label>Cost per square foot for Service 2</Label>
-              <InlineWrapper>
-                <EditableInput
-                  ref={service2ChargeRef}
-                  type="text"
-                  value={
-                    isEditingService2Charge
-                      ? service2Charge
-                      : formatCurrency(service2Charge)
-                  }
-                  onChange={(e) =>
-                    setService2Charge(parseFloat(e.target.value) || 0)
-                  }
-                  readOnly={!isEditingService2Charge}
-                  onBlur={() => handleBlur(setIsEditingService2Charge)}
-                />
-                <EditButton
-                  onClick={() =>
-                    handleEditClick(
-                      setIsEditingService2Charge,
-                      service2ChargeRef
-                    )
-                  }
-                >
-                  Edit
-                </EditButton>
-              </InlineWrapper>
-            </BoxWrapper>
-          </RowWrapper>
+                  <EditButton
+                    onClick={() => handleEditClick(index, "isEditingCharge")}
+                  >
+                    Edit
+                  </EditButton>
+                </InlineWrapper>
+              </BoxWrapper>
+            </RowWrapper>
+          ))}
+          <AddServiceButton onClick={addService}>
+            Add More Services
+          </AddServiceButton>
         </ContainerBox>
       </DashboardContent>
     </DashboardContainer>

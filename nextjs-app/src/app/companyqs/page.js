@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "@/lib/firebase";
-import { addUserData } from "@/lib/authHelpers";
+import { addServiceData } from "@/lib/authHelpers";
 import { useForm } from "react-hook-form";
 
 const containerStyle = {
@@ -92,26 +92,9 @@ const addButtonStyle = {
   alignSelf: "center",
 };
 
-const serviceOptions = [
-  "Lawn Mowing",
-  "Lawn Seeding and Sod Installation",
-  "Fertilization and Weed Control",
-  "Mulching",
-  "Irrigation System Installation",
-  "Lawn Aeration",
-  "Hydroseeding",
-  "Gravel or Stone Ground Covering",
-  "Artificial Turf Installation",
-  "Leaf Removal",
-  "Snow Removal",
-  "Soil Grading and Leveling",
-  "Pesticide and Herbicide Spraying",
-];
-
 function CompanyQs() {
   const [user, setUser] = useState(null);
   const [serviceCount, setServiceCount] = useState(3);
-  const [selectedServices, setSelectedServices] = useState([]);
   const router = useRouter();
 
   const {
@@ -135,7 +118,7 @@ function CompanyQs() {
 
   // Function to handle form submission
   const onSubmit = (data) => {
-    addUserData(user, data); // Adding all form data to Firebase
+    addServiceData(user, data); // Adding all form data to Firebase
     router.push("/dashboard"); // Redirect to dashboard
   };
 
@@ -145,19 +128,6 @@ function CompanyQs() {
 
   const handleAddService = () => {
     setServiceCount(serviceCount + 1);
-  };
-
-  const handleServiceChange = (index, value) => {
-    const updatedServices = [...selectedServices];
-    updatedServices[index] = value;
-    setSelectedServices(updatedServices);
-  };
-
-  const availableOptions = (index) => {
-    return serviceOptions.filter(
-      (option) =>
-        !selectedServices.includes(option) || selectedServices[index] === option
-    );
   };
 
   if (!user) {
@@ -178,22 +148,12 @@ function CompanyQs() {
             <label style={labelStyle} htmlFor={`service${index + 1}`}>
               What is the name of service #{index + 1} that you offer?
             </label>
-            <select
+            <input
               style={inputStyle}
+              type="text"
               id={`service${index + 1}`}
               {...register(`service${index + 1}`, { required: index === 0 })}
-              value={selectedServices[index] || ""}
-              onChange={(e) => handleServiceChange(index, e.target.value)}
-            >
-              <option value="" disabled>
-                Select a service
-              </option>
-              {availableOptions(index).map((option) => (
-                <option key={option} value={option}>
-                  {option}
-                </option>
-              ))}
-            </select>
+            />
             {errors[`service${index + 1}`] && index === 0 && (
               <p style={{ color: "red" }}>This field is required</p>
             )}
@@ -205,6 +165,7 @@ function CompanyQs() {
             <input
               style={inputStyle}
               type="number"
+              step="0.01"
               id={`rate${index + 1}`}
               {...register(`rate${index + 1}`, { required: index === 0 })}
             />
