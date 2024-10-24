@@ -19,12 +19,10 @@ function Service() {
     "Lawn Fertilization",
     "Weed Control",
     "Mulching",
-    "Tree Trimming",
     "Seeding",
     "Aeration",
     "Snow Removal",
     "Pest Control",
-    "Gutter Cleaning",
   ];
 
   useEffect(() => {
@@ -339,7 +337,7 @@ function Service() {
               <div
                 id="map"
                 ref={mapRef}
-                style={{ width: "100%", height: "400px" }}
+                style={{ width: "95%", height: "350px" }}
               ></div>
               <div className="buttons">
                 <button className="back" onClick={prevPage}>
@@ -355,7 +353,7 @@ function Service() {
           {currentPage === 3 && (
             <div id="estimates">
               <div className="page-section-title">Estimated Price Range</div>
-              <div className="price-range-text">$000.00 - $9,999.00</div>
+              <div className="price-range-text">$469.99 - $519.99</div>
               <div id="estimate-selection-column">
                 <div className="section-title">Click to Remove</div>
                 <div className="services-rect">
@@ -390,7 +388,7 @@ function Service() {
               <div className="page-section-title">
                 Submit Your Service Request
               </div>
-              <div className="price-range-text-2">$000.00 - $9,999.00</div>
+              <div className="price-range-text-2">$469.99 - $519.99</div>
               <div className="add-services">
                 <div className="section-title">
                   Enter the following and we will contact you shortly
@@ -457,7 +455,7 @@ function Service() {
       </div>
       <script
         async
-        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBiuA09yX97uLcZjBbWlMFoKe8ohxJhF8o&loading=async&libraries=places,drawing,geometry&callback=initAutocomplete"
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDDIpDDK41N91FtDCBJkEccAzUjKT5zELI&loading=async&libraries=places,drawing,geometry&callback=initAutocomplete"
       ></script>
     </>
   );
