@@ -125,7 +125,7 @@ const AccountDropdown = () => {
 
   const handleLogout = async () => {
     try {
-      await signOut(auth);
+      await signOut();
       router.push("/");
     } catch (error) {
       console.error("Failed to sign out:", error);

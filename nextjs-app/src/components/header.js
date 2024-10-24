@@ -1,6 +1,9 @@
 import React from "react";
 import styled from "@emotion/styled";
 import Tab from "./tab.js";
+import { signOut } from "@/lib/authHelpers";
+import { useRouter } from "next/navigation";
+import { auth } from "@/lib/firebase";
 
 const HeaderContainer = styled.header`
   background-color: #1a1a1a; /* Match with main dark background */
@@ -61,6 +64,17 @@ export default function Header({ onContentChange, activeTab }) {
     return tabName === activeTab;
   }
 
+  const router = useRouter();
+
+  const handleLogout = async () => {
+    try {
+      await signOut();
+      router.push("/");
+    } catch (error) {
+      console.error("Failed to sign out:", error);
+    }
+  };
+
   return (
     <HeaderContainer>
       <Nav>
@@ -85,7 +99,7 @@ export default function Header({ onContentChange, activeTab }) {
           onClick={handleTabClick}
         />
       </Nav>
-      <LogoutButton>Logout</LogoutButton>
+      <LogoutButton onClick={handleLogout}>Logout</LogoutButton>
     </HeaderContainer>
   );
 }
