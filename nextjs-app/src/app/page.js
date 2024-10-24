@@ -1,6 +1,7 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import Service from "./service/page";
+import Signup from "./signup/page";
+import CompanyQs from "./companyqs/page";
 
 const FramerEmbed = () => {
   return (

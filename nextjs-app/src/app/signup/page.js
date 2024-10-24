@@ -1,10 +1,11 @@
 "use client";
+
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as Yup from "yup";
-import { signIn } from "@/lib/authHelpers";
+import { signUp } from "@/lib/authHelpers";
 import {
   Button,
   TextField,
@@ -17,6 +18,7 @@ import {
 
 // Validation schema using Yup
 const validationSchema = Yup.object().shape({
+  companyName: Yup.string().trim().required("Company Name is required"),
   email: Yup.string()
     .email("Please enter a valid email")
     .required("Email is required"),
@@ -25,7 +27,7 @@ const validationSchema = Yup.object().shape({
     .required("Password is required"),
 });
 
-function Signin() {
+function Signup() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const router = useRouter();
@@ -42,11 +44,21 @@ function Signin() {
   const onSubmit = async (data) => {
     setLoading(true);
     setError("");
+    if (data.password !== data.confirmedPassword) {
+      setError("Passwords do not match");
+      setLoading(false);
+      return;
+    }
+    if (!data.companyName) {
+      setError("Company Name is required");
+      setLoading(false);
+      return;
+    }
     try {
-      await signIn(data.email, data.password);
-      router.push("/dashboard");
+      await signUp(data.email, data.password);
+      router.push("/companyqs");
     } catch (err) {
-      setError(err.message || "Login failed, please try again.");
+      setError(err.message || "Sign up failed, please try again.");
     } finally {
       setLoading(false);
     }
@@ -54,39 +66,54 @@ function Signin() {
 
   return (
     <Container
-      maxWidth="xs"
+      maxWidth="sm"
       sx={{
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        minHeight: "100vh",
         backgroundColor: "white",
+        minHeight: "100vh",
+        paddingTop: 8,
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
       }}
     >
       <Box
         sx={{
           width: "100%",
-          padding: 4,
           backgroundColor: "white",
           borderRadius: 2,
           boxShadow: 3,
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
+          padding: 4,
         }}
       >
-        <Typography variant="h4" gutterBottom sx={{ color: "green" }}>
-          Login
+        <Typography
+          variant="h4"
+          gutterBottom
+          sx={{ color: "green", textAlign: "center" }}
+        >
+          Sign Up
         </Typography>
 
-        {/* Show error alert if login fails */}
         {error && <Alert severity="error">{error}</Alert>}
 
         <Box
           component="form"
           onSubmit={handleSubmit(onSubmit)}
-          sx={{ mt: 2, width: "100%" }}
+          sx={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            mt: 2,
+          }}
         >
+          <TextField
+            label="Company Name"
+            fullWidth
+            margin="normal"
+            {...register("companyName")}
+            error={!!errors.companyName}
+            helperText={errors.companyName?.message}
+          />
+
           <TextField
             label="Email"
             fullWidth
@@ -107,7 +134,17 @@ function Signin() {
             sx={{ color: "green" }}
           />
 
-          {/* Submit button with loading indicator */}
+          <TextField
+            label="Confirm Password"
+            type="password"
+            fullWidth
+            margin="normal"
+            {...register("confirmedPassword")}
+            error={!!errors.password}
+            helperText={errors.password?.message}
+            sx={{ color: "green" }}
+          />
+
           <Button
             type="submit"
             fullWidth
@@ -115,7 +152,7 @@ function Signin() {
             disabled={loading}
             sx={{ mt: 2, mb: 2, backgroundColor: "green" }}
           >
-            {loading ? <CircularProgress size={24} /> : "Login"}
+            {loading ? <CircularProgress size={24} /> : "Sign Up"}
           </Button>
         </Box>
       </Box>
@@ -123,4 +160,4 @@ function Signin() {
   );
 }
 
-export default Signin;
+export default Signup;
