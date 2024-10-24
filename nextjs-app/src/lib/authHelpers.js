@@ -1,9 +1,11 @@
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
+  getAuth,
+  onAuthStateChanged,
 } from "firebase/auth";
 import { auth, db } from "./firebase.js"; // Import your Firebase config
-import { setDoc, doc } from "firebase/firestore";
+import { setDoc, doc, getDoc } from "firebase/firestore";
 
 // Sign Up function
 export const signUp = async (email, password, companyName) => {
@@ -55,4 +57,37 @@ export const addUserData = async (user, data) => {
     console.error("Error adding user data:", error.message);
     throw error;
   }
+};
+
+export const getUserData = async (user, key) => {
+  try {
+    // Reference the user's document using their UID
+    const docRef = doc(db, "users", user.uid);
+    // Get the document snapshot
+    const docSnap = await getDoc(docRef);
+
+    // Check if the document exists and return the data
+    if (docSnap.exists()) {
+      return docSnap.data()[key];
+    } else {
+      console.log("No such document!");
+      return undefined;
+    }
+  } catch (error) {
+    console.error("Error getting user data:", error.message);
+    throw error;
+  }
+};
+
+export const currentUser = () => {
+  const auth = getAuth();
+  return new Promise((resolve, reject) => {
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        resolve(user); // Return the authenticated user object
+      } else {
+        reject("No user is logged in"); // Handle cases where the user is not logged in
+      }
+    });
+  });
 };

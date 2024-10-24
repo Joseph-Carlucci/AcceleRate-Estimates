@@ -1,6 +1,9 @@
 "use client";
 import React, { useState, useEffect, useRef, useCallback, useId } from "react";
 import styled from "@emotion/styled";
+import { getUserData, currentUser } from "@/lib/authHelpers";
+import { get } from "react-hook-form";
+import { autocompleteClasses } from "@mui/material";
 
 const Container = styled.div`
   padding: 1rem;
@@ -96,6 +99,7 @@ const DropdownItem = styled.a`
 
 const AccountDropdown = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const [username, setUsername] = useState("Loading...");
   const dropdownRef = useRef(null);
   const buttonId = useId(); // Accessible ID for button
 
@@ -116,6 +120,23 @@ const AccountDropdown = () => {
   }, []);
 
   useEffect(() => {
+    const fetchUsername = async () => {
+      try {
+        const user = await currentUser(); // Make sure this returns the user object
+        if (user) {
+          const name = await getUserData(user, "email"); // Assuming 'email' is the key you're fetching
+          setUsername(name || "Unknown User");
+        } else {
+          setUsername("Guest");
+        }
+      } catch (error) {
+        console.error("Failed to fetch username:", error);
+        setUsername("Error");
+      }
+    };
+
+    fetchUsername(); // Call the function to fetch the username
+
     document.addEventListener("mousedown", handleClickOutside);
     document.addEventListener("keydown", handleKeyDown);
     return () => {
@@ -135,8 +156,7 @@ const AccountDropdown = () => {
           aria-controls={`${buttonId}-menu`}
           tabIndex="0"
         >
-          <img src="/path/to/avatar.jpg" alt="User Avatar" className="avatar" />
-          <span className="username">Username</span>
+          <span className="username">{username}</span>
           <svg
             className={`icon ${isOpen ? "rotate" : ""}`}
             xmlns="http://www.w3.org/2000/svg"

@@ -50,7 +50,6 @@ function Signup() {
     }
     try {
       await signUp(data.email, data.password);
-      alert("User successfully signed in!");
       router.push("/companyqs");
     } catch (err) {
       setError(err.message || "Sign up failed, please try again.");

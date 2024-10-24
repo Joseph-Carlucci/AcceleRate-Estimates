@@ -1,11 +1,7 @@
 {
   "hosting": {
     "public": "out",
-    "ignore": [
-      "firebase.json",
-      "**/.*",
-      "**/node_modules/**"
-    ],
+    "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
     "rewrites": [
       {
         "source": "/login",
@@ -14,6 +10,26 @@
       {
         "source": "/contact",
         "destination": "/contact.html"
+      },
+      {
+        "source": "/login",
+        "destination": "/login.html"
+      },
+      {
+        "source": "/dashboard",
+        "destination": "/dashboard.html"
+      },
+      {
+        "source": "/signup",
+        "destination": "/signup.html"
+      },
+      {
+        "source": "/companyqs",
+        "destination": "/forgot-password.html"
+      },
+      {
+        "source": "/customlink",
+        "destination": "/custom-link.html"
       },
       {
         "source": "**",
