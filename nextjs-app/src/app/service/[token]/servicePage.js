@@ -1,8 +1,9 @@
 "use client";
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, use } from "react";
 import "./service.css";
+import { useParams } from "react-router-dom";
 
-function Service() {
+export default function ServicePage({ serviceData }) {
   const [currentPage, setCurrentPage] = useState(1);
   const [searchable, setSearchable] = useState(false);
   const [polygons, setPolygons] = useState([]);
@@ -219,6 +220,7 @@ function Service() {
     <>
       <div className="select-services-page">
         <div className="header">
+          <h1 className="title">Company: {serviceData}</h1>
           <div className="overlap-group">
             {Array.from({ length: 4 }).map((_, index) => (
               <React.Fragment key={index}>
@@ -251,9 +253,6 @@ function Service() {
               )
             )}
           </div>
-          <button id="exit">
-            <div id="exit-text">Exit</div>
-          </button>
         </div>
         <div className="body">
           <div className="background-image"></div>
@@ -463,5 +462,3 @@ function Service() {
     </>
   );
 }
-
-export default Service;

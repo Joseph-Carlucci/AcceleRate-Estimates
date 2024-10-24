@@ -1,6 +1,8 @@
 "use client";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import styled from "@emotion/styled";
+import { getUserData, currentUser } from "@/lib/authHelpers";
+import { getAuth } from "firebase/auth";
 
 const DashboardContainer = styled.div`
   position: relative;
@@ -62,7 +64,19 @@ const LinkText = styled.p`
   margin: 10px 0;
 `;
 
-const CustomLinkPage = () => {
+export default function CustomLinkPage() {
+  const [customLink, setCustomLink] = React.useState("");
+
+  React.useEffect(() => {
+    const fetchCustomLink = async () => {
+      const customLinkToken = await getUserData(
+        "customLinkToken"
+      );
+      setCustomLink("accelerate-estimates.com/service/" + customLinkToken);
+    };
+
+    fetchCustomLink();
+  }, []);
   return (
     <DashboardContainer>
       <DashboardHeader>
@@ -77,18 +91,12 @@ const CustomLinkPage = () => {
           </LinkText>
           <LinkText>
             <strong>Link:</strong>{" "}
-            <a
-              href="https://example.com/automated-software"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              https://example.com/automated-software
+            <a href={customLink} target="_blank" rel="noopener noreferrer">
+              {customLink}
             </a>
           </LinkText>
         </LinkBox>
       </DashboardContent>
     </DashboardContainer>
   );
-};
-
-export default CustomLinkPage;
+}
