@@ -70,6 +70,32 @@ export const addUserData = async (user, data) => {
   }
 };
 
+export const addServiceData = async (user, data) => {
+  if (user) {
+    const services = [];
+    // Extract services from form data
+    for (let i = 1; i <= Object.keys(data).length / 2; i++) {
+      if (data[`service${i}`] && data[`rate${i}`]) {
+        services.push({
+          name: data[`service${i}`],
+          rate: parseFloat(data[`rate${i}`]),
+        });
+      }
+    }
+
+    // Create structured data to save in Firestore
+    const userData = {
+      email: user.email,
+      name: data.companyName || user.displayName || "Your Company",
+      services: services,
+    };
+
+    // Set the document in Firestore
+    const userRef = doc(db, "users", user.uid);
+    await setDoc(userRef, userData, { merge: true });
+  }
+};
+
 export const getUserData = async (user, key) => {
   try {
     // Reference the user's document using their UID
