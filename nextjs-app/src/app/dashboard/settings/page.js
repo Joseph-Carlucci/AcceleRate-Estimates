@@ -41,7 +41,6 @@ const DashboardContent = styled.div`
   align-items: center;
   margin-top: 30px;
   width: 100%;
-  overflow-y: auto;
   padding: 20px;
 `;
 
@@ -51,6 +50,8 @@ const SettingsBox = styled.div`
   border-radius: 10px;
   width: 100%;
   max-width: 800px;
+  max-height: 500px; /* Set max-height for the box */
+  overflow-y: auto; /* Enable scrolling if content exceeds height */
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
   margin-bottom: 20px;
   position: relative;
