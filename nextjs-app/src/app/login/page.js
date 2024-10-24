@@ -44,7 +44,6 @@ function Signin() {
     setError("");
     try {
       await signIn(data.email, data.password);
-      alert("User successfully signed in!");
       router.push("/dashboard");
     } catch (err) {
       setError(err.message || "Login failed, please try again.");

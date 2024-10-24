@@ -50,7 +50,6 @@ function Signup() {
     }
     try {
       await signUp(data.email, data.password);
-      alert("User successfully signed in!");
       router.push("/companyqs");
     } catch (err) {
       setError(err.message || "Sign up failed, please try again.");
@@ -100,6 +99,15 @@ function Signup() {
             mt: 2,
           }}
         >
+          <TextField
+            label="Company Name"
+            fullWidth
+            margin="normal"
+            {...register("companyName")}
+            error={!!errors.email}
+            helperText={errors.email?.message}
+          />
+
           <TextField
             label="Email"
             fullWidth
