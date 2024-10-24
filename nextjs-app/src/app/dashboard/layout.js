@@ -39,7 +39,9 @@ const MainContentContainer = styled.div`
 const TopBarContainer = styled.div`
   display: flex;
   justify-content: flex-end;
+  align-items: center;
   flex-shrink: 0; /* Prevents shrinking */
+  border-bottom: 1px solid #ddd;
 `;
 
 const MainContent = styled.main`
@@ -48,8 +50,19 @@ const MainContent = styled.main`
   background-color: #ffffff; /* Dark background for the main content */
 `;
 
+const Title = styled.h1`
+  margin-left: 3rem;
+  color: #003300; /* Deeper green for a more elegant, modern feel */
+  font-weight: 600; /* Slightly bolder for emphasis without losing refinement */
+  font-size: 2rem; /* Larger font size for better visual hierarchy */
+  text-align: left; /* Center align for a more balanced appearance */
+  width: 100%;
+  line-height: 1.4; /* Improved readability */
+  letter-spacing: 0.05rem; /* Slight letter spacing for a more polished look */
+`;
+
 export default function RootLayout() {
-  const [activeContent, setActiveContent] = useState("Menu");
+  const [activeContent, setActiveContent] = useState("Custom Link");
 
   const renderContent = () => {
     switch (activeContent) {
@@ -78,6 +91,7 @@ export default function RootLayout() {
       {/* Main Content Area */}
       <MainContentContainer>
         <TopBarContainer>
+          <Title>AcceleRate</Title>
           <AccountDropdown />
         </TopBarContainer>
         <MainContent>{renderContent()}</MainContent>

@@ -75,7 +75,14 @@ const CustomLinkPage = () => {
             and use it however you'd like.
           </LinkText>
           <LinkText>
-            <strong>Link:</strong> https://example.com/automated-software
+            <strong>Link:</strong>{" "}
+            <a
+              href="https://example.com/automated-software"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              https://example.com/automated-software
+            </a>
           </LinkText>
         </LinkBox>
       </DashboardContent>

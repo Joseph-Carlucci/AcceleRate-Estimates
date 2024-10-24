@@ -19,16 +19,6 @@ const HeaderContainer = styled.header`
   border-right: 1px solid rgba(255, 255, 255, 0.05); /* Subtle border */
 `;
 
-const Title = styled.h1`
-  padding: 10px 0;
-  color: #3fdc97; /* Matching accent color */
-  font-weight: 600; /* Slightly less bold for a refined look */
-  font-size: 22px; /* Slightly smaller font size */
-  text-align: left; /* Align text to the left */
-  width: 100%;
-  margin-bottom: 20px; /* Space between title and nav */
-`;
-
 const Nav = styled.nav`
   display: flex;
   flex-direction: column;
@@ -73,13 +63,7 @@ export default function Header({ onContentChange, activeTab }) {
 
   return (
     <HeaderContainer>
-      <Title>AcceleRate</Title>
       <Nav>
-        <Tab
-          name="Menu"
-          isActive={getActive("Menu")}
-          onClick={handleTabClick}
-        />
         <Tab
           name="Pricing Configuration"
           isActive={getActive("Pricing Configuration")}
