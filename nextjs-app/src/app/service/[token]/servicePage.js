@@ -457,7 +457,7 @@ export default function ServicePage({ serviceData }) {
       </div>
       <script
         async
-        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDDIpDDK41N91FtDCBJkEccAzUjKT5zELI&loading=async&libraries=places,drawing,geometry&callback=initAutocomplete"
+        src={`https://maps.googleapis.com/maps/api/js?key=${process.env.API_KEY}&loading=async&libraries=places,drawing,geometry&callback=initAutocomplete`}
       ></script>
     </>
   );
