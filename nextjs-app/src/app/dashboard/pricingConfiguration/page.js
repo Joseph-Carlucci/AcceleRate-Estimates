@@ -1,8 +1,9 @@
+// page.js
 "use client";
 import React, { useState, useEffect, useRef } from "react";
 import styled from "@emotion/styled";
 import { db, auth } from "@/lib/firebase";
-import { doc, getDoc } from "firebase/firestore";
+import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { onAuthStateChanged } from "firebase/auth";
 
 const DashboardContainer = styled.div`
@@ -111,7 +112,7 @@ const EditableInput = styled.input`
   border-radius: 5px;
   width: 100%;
   text-align: center;
-  border: 1px solid #ccc;
+  border: 1px solid ${({ readOnly }) => (readOnly ? "#ccc" : "#008000")};
   cursor: ${({ readOnly }) => (readOnly ? "default" : "text")};
   margin-right: 10px;
 `;
@@ -127,6 +128,20 @@ const EditButton = styled.button`
 
   &:hover {
     background-color: #004b2d;
+  }
+`;
+
+const SubmitButton = styled.button`
+  padding: 10px;
+  border: none;
+  background-color: #008000;
+  color: white;
+  cursor: pointer;
+  border-radius: 5px;
+  white-space: nowrap;
+
+  &:hover {
+    background-color: #005c00;
   }
 `;
 
@@ -151,34 +166,18 @@ const AddServiceButton = styled.button`
 const PricingConfigurationPage = () => {
   const [services, setServices] = useState([]);
   const [userData, setUserData] = useState({});
+  const [userId, setUserId] = useState(null);
   const serviceRefs = useRef([]);
   const chargeRefs = useRef([]);
 
   useEffect(() => {
-    // Fetch user data from Firestore for the logged-in user
+    console.log("useEffect triggered");
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
+        console.log("User is logged in:", user.uid);
         try {
-          const docRef = doc(db, "users", user.uid); // Use the logged-in user's unique ID as the document ID
-          const docSnap = await getDoc(docRef);
-
-          if (docSnap.exists()) {
-            const data = docSnap.data();
-            setUserData(data);
-
-            // Update the services list based on fetched data
-            if (data.services) {
-              const fetchedServices = data.services.map((service) => ({
-                name: service.name,
-                charge: parseFloat(service.rate) || 0.0,
-                isEditingName: false,
-                isEditingCharge: false,
-              }));
-              setServices(fetchedServices);
-            }
-          } else {
-            console.log("No such document!");
-          }
+          setUserId(user.uid);
+          await fetchUserData(user.uid);
         } catch (error) {
           console.error("Error fetching document:", error);
         }
@@ -189,6 +188,32 @@ const PricingConfigurationPage = () => {
 
     return () => unsubscribe();
   }, []);
+
+  const fetchUserData = async (uid) => {
+    try {
+      const docRef = doc(db, "users", uid);
+      const docSnap = await getDoc(docRef);
+
+      if (docSnap.exists()) {
+        const data = docSnap.data();
+        setUserData(data);
+
+        if (data.services) {
+          const fetchedServices = data.services.map((service) => ({
+            name: service.name,
+            charge: parseFloat(service.rate) || 0.0,
+            isEditingName: false,
+            isEditingCharge: false,
+          }));
+          setServices(fetchedServices);
+        }
+      } else {
+        console.log("No such document!");
+      }
+    } catch (error) {
+      console.error("Error fetching user data:", error);
+    }
+  };
 
   const handleEditClick = (index, key) => {
     setServices((prevServices) =>
@@ -205,14 +230,6 @@ const PricingConfigurationPage = () => {
     }, 0);
   };
 
-  const handleBlur = (index, key) => {
-    setServices((prevServices) =>
-      prevServices.map((service, i) =>
-        i === index ? { ...service, [key]: false } : service
-      )
-    );
-  };
-
   const handleServiceChange = (index, value) => {
     setServices((prevServices) =>
       prevServices.map((service, i) =>
@@ -227,6 +244,39 @@ const PricingConfigurationPage = () => {
         i === index ? { ...service, charge: parseFloat(value) || 0 } : service
       )
     );
+  };
+
+  const handleSubmitClick = async (index, key) => {
+    setServices((prevServices) =>
+      prevServices.map((service, i) =>
+        i === index ? { ...service, [key]: false } : service
+      )
+    );
+
+    try {
+      if (userId) {
+        const docRef = doc(db, "users", userId);
+        const updatedServices = services.map((service, i) => ({
+          name:
+            i === index && key === "isEditingName"
+              ? service.name
+              : service.name,
+          rate:
+            i === index && key === "isEditingCharge"
+              ? service.charge
+              : service.charge,
+        }));
+
+        await updateDoc(docRef, {
+          services: updatedServices,
+        });
+
+        console.log("Service updated successfully in Firestore");
+        await fetchUserData(userId); // Refresh user data
+      }
+    } catch (error) {
+      console.error("Error updating service in Firestore:", error);
+    }
   };
 
   const formatCurrency = (value) => `$${value.toFixed(2)}`;
@@ -264,13 +314,20 @@ const PricingConfigurationPage = () => {
                     value={service.name}
                     onChange={(e) => handleServiceChange(index, e.target.value)}
                     readOnly={!service.isEditingName}
-                    onBlur={() => handleBlur(index, "isEditingName")}
                   />
-                  <EditButton
-                    onClick={() => handleEditClick(index, "isEditingName")}
-                  >
-                    Edit
-                  </EditButton>
+                  {service.isEditingName ? (
+                    <SubmitButton
+                      onClick={() => handleSubmitClick(index, "isEditingName")}
+                    >
+                      Submit
+                    </SubmitButton>
+                  ) : (
+                    <EditButton
+                      onClick={() => handleEditClick(index, "isEditingName")}
+                    >
+                      Edit
+                    </EditButton>
+                  )}
                 </InlineWrapper>
               </BoxWrapper>
               <BoxWrapper>
@@ -286,13 +343,22 @@ const PricingConfigurationPage = () => {
                     }
                     onChange={(e) => handleChargeChange(index, e.target.value)}
                     readOnly={!service.isEditingCharge}
-                    onBlur={() => handleBlur(index, "isEditingCharge")}
                   />
-                  <EditButton
-                    onClick={() => handleEditClick(index, "isEditingCharge")}
-                  >
-                    Edit
-                  </EditButton>
+                  {service.isEditingCharge ? (
+                    <SubmitButton
+                      onClick={() =>
+                        handleSubmitClick(index, "isEditingCharge")
+                      }
+                    >
+                      Submit
+                    </SubmitButton>
+                  ) : (
+                    <EditButton
+                      onClick={() => handleEditClick(index, "isEditingCharge")}
+                    >
+                      Edit
+                    </EditButton>
+                  )}
                 </InlineWrapper>
               </BoxWrapper>
             </RowWrapper>

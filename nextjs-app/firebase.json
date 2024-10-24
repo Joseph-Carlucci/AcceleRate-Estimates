@@ -8,14 +8,6 @@
         "destination": "/login.html"
       },
       {
-        "source": "/contact",
-        "destination": "/contact.html"
-      },
-      {
-        "source": "/login",
-        "destination": "/login.html"
-      },
-      {
         "source": "/dashboard",
         "destination": "/dashboard.html"
       },
@@ -25,11 +17,7 @@
       },
       {
         "source": "/companyqs",
-        "destination": "/forgot-password.html"
-      },
-      {
-        "source": "/customlink",
-        "destination": "/custom-link.html"
+        "destination": "/companyqs.html"
       },
       {
         "source": "**",
